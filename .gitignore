@@ -1,5 +1,7 @@
 .vercel
 venv/
 uploaded_videos/
+vercel.json
+.vercelignore
 // If you decide to host the model externally or don't need it on Vercel
 models/

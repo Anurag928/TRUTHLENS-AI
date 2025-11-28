@@ -2,24 +2,28 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 import os
 import uuid
 import cv2
 import numpy as np
 from datetime import datetime
+import torch
+from torchvision import transforms
+from PIL import Image
+from model import Model
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///deepfake.db'
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'fallback-dev-secret-key-change-in-production')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
+app.config['UPLOAD_FOLDER'] = 'uploaded_videos'
 
-# Initialize extensions
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-
-# Ensure upload folder exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # User model
 class User(UserMixin, db.Model):
@@ -42,7 +46,99 @@ class Video(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Routes
+# --- Model Setup ---
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f"Loading model on {device}...")
+
+# Initialize model
+model = Model(num_classes=2)
+model_path = os.path.join('models', 'Model 97 Accuracy 100 Frames FF Data.pt')
+
+try:
+    if os.path.exists(model_path):
+        checkpoint = torch.load(model_path, map_location=device)
+        model.load_state_dict(checkpoint, strict=True)
+        model.to(device)
+        model.eval()
+        print("Model loaded successfully!")
+    else:
+        print(f"Model file not found at {model_path}")
+except Exception as e:
+    print(f"Error loading model: {e}")
+
+# Preprocessing
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
+
+def predict_video(video_path, sequence_length=20):
+    """
+    Reads video, extracts frames, and runs inference.
+    """
+    try:
+        cap = cv2.VideoCapture(video_path)
+        frames = []
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        
+        if total_frames <= 0:
+            return False, 0.0 # Could not read video
+            
+        # Calculate interval to extract 'sequence_length' frames evenly
+        interval = max(1, total_frames // sequence_length)
+        
+        count = 0
+        frame_idx = 0
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+                
+            if frame_idx % interval == 0 and len(frames) < sequence_length:
+                # Convert BGR to RGB
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                pil_img = Image.fromarray(frame_rgb)
+                
+                # Transform
+                tensor_img = transform(pil_img)
+                frames.append(tensor_img)
+                
+            frame_idx += 1
+            
+        cap.release()
+        
+        if not frames:
+            return False, 0.0
+            
+        # Stack frames: [seq_len, 3, 224, 224]
+        video_tensor = torch.stack(frames)
+        
+        # Add batch dimension: [1, seq_len, 3, 224, 224]
+        video_tensor = video_tensor.unsqueeze(0).to(device)
+        
+        with torch.no_grad():
+            outputs = model(video_tensor)
+            # outputs shape: [1, 2]
+            print(f"Raw model outputs: {outputs}")
+            probabilities = torch.nn.functional.softmax(outputs, dim=1)
+            print(f"Probabilities: {probabilities}")
+            
+            # Assuming class 1 is Deepfake, class 0 is Authentic
+            # Based on typical binary classification
+            fake_prob = probabilities[0][1].item()
+            print(f"Fake probability (Class 1): {fake_prob}")
+            
+            is_deepfake = fake_prob > 0.5
+            confidence = fake_prob * 100 if is_deepfake else (1.0 - fake_prob) * 100
+            
+        return is_deepfake, confidence
+    except Exception as e:
+        print(f"Error in prediction: {e}")
+        return False, 0.0
+
+# --- Routes ---
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -121,26 +217,30 @@ def validate():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             video_file.save(filepath)
 
-            # Here you would normally call your deepfake detection model
-            # For demonstration, using random result
-            import random
-            is_deepfake = random.choice([True, False])
-            confidence = random.uniform(60, 99)
+            try:
+                # Call deepfake detection model
+                is_deepfake, confidence = predict_video(filepath)
+                
+                result_str = 'Deepfake' if is_deepfake else 'Authentic'
+                
+                # Save video analysis to database
+                video = Video(
+                    filename=filename,
+                    result=result_str,
+                    confidence=confidence,
+                    user_id=current_user.id
+                )
+                db.session.add(video)
+                db.session.commit()
 
-            # Save video analysis to database
-            video = Video(
-                filename=filename,
-                result='Deepfake' if is_deepfake else 'Authentic',
-                confidence=confidence,
-                user_id=current_user.id
-            )
-            db.session.add(video)
-            db.session.commit()
-
-            return render_template('predict.html', 
-                                prediction='Deepfake' if is_deepfake else 'Authentic',
-                                confidence=confidence,
-                                unique_hash_id=filename)
+                return render_template('predict.html', 
+                                    prediction=result_str,
+                                    confidence=round(confidence, 2),
+                                    unique_hash_id=filename)
+            except Exception as e:
+                print(f"Error processing video: {e}")
+                flash('Error processing video')
+                return redirect(request.url)
 
     return render_template('validate.html')
 
@@ -158,6 +258,12 @@ def get_stats():
     })
 
 if __name__ == '__main__':
+    # Ensure upload folder exists
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    
     with app.app_context():
         db.create_all()
-    app.run(debug=True) 
+    
+    # Use environment variable for debug mode (False in production)
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug_mode, host='0.0.0.0', port=int(os.getenv('PORT', 5000)))

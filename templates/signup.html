@@ -1,162 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up - TruthLens AI</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/saas.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Deepfake Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="auth-page signup-page">
-  <div class="auth-bg" aria-hidden="true">
-    <span class="auth-orb one"></span>
-    <span class="auth-orb two"></span>
-    <span class="auth-grid-overlay"></span>
-  </div>
+<body class="bg-gradient-to-br from-gray-900 via-black to-green-900 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden max-w-md mx-auto">
+            <div class="p-8 bg-gray-800 flex flex-col justify-center">
+                <h2 class="text-3xl font-bold text-center mb-6 text-green-400">
+                    <i class="fas fa-user-plus mr-3"></i>Sign Up
+                </h2>
+                
+                <form id="signupForm" class="space-y-4 form"  method="post" enctype="multipart/form-data">
+                    <input type="text" placeholder="Full Name" id="username" name="username"
+                        class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                    <input type="email" placeholder="Email" id="email" name="email" 
+                        class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                    <input type="password" placeholder="Password" id="password1" name="password1"
+                        class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                    <input type="password" placeholder="Confirm Password"  id="password2" name="password2"
+                        class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                    <button type="submit" class="w-full bg-green-600 py-2 px-4 text-sm rounded-lg hover:bg-green-700 transition transform hover:scale-105 mt-4">
+                        Create Account
+                    </button>
+                    
+                </form>
 
-  <div class="app-shell">
-    <header class="topbar">
-      <div class="container-xl topbar-inner">
-        <a href="{{ url_for('home') }}" class="brand">
-          <span class="brand-icon"><i class="fas fa-shield-halved"></i></span>
-          <span>TruthLens AI</span>
-        </a>
-
-        <nav class="nav-links">
-          <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-          {% if current_user.is_authenticated %}
-            <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
-            <a class="nav-link" href="{{ url_for('validate') }}">Validate</a>
-            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-          {% else %}
-            <a class="nav-link" href="{{ url_for('login') }}">Sign In</a>
-            <a class="nav-link active" href="{{ url_for('signup') }}">Sign Up</a>
-          {% endif %}
-        </nav>
-
-        <div class="nav-actions">
-          <button id="themeToggle" class="theme-toggle" title="Toggle theme"><i id="themeIcon" class="fas fa-moon"></i></button>
-          <button id="mobileNavToggle" class="theme-toggle mobile-nav-toggle" aria-label="Open navigation menu"><i class="fas fa-bars"></i></button>
+                <div class="mt-6 text-center">
+                    <p class="text-gray-300">Already have an account? 
+                        <a href={{url_for("login")}} class="text-blue-400 hover:underline">Login</a>
+                    </p>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div id="mobileNav" class="container-xl mobile-nav">
-        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-        {% if current_user.is_authenticated %}
-          <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
-          <a class="nav-link" href="{{ url_for('validate') }}">Validate</a>
-          <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-          <a class="nav-link" href="{{ url_for('login') }}">Sign In</a>
-          <a class="nav-link active" href="{{ url_for('signup') }}">Sign Up</a>
-        {% endif %}
-      </div>
-    </header>
-
-    <main class="auth-main">
-      <section class="auth-layout" aria-label="Sign up experience">
-        <section class="auth-brand-panel auth-reveal d2" aria-label="TruthLens AI highlights">
-          <div class="auth-brand-content">
-            <span class="auth-chip"><i class="fas fa-shield-check"></i> Trusted AI Verification</span>
-            <h1 class="auth-brand-title">Build a <span class="auth-gradient-word">secure</span> media validation workflow.</h1>
-            <p class="auth-brand-copy">TruthLens AI helps teams identify manipulated content before it creates business risk. Onboard in minutes and start validating media with forensic precision.</p>
-
-            <ul class="auth-feature-list">
-              <li><i class="fas fa-circle-check"></i><span>Frame-level analysis built for detecting deepfakes across high-risk uploads.</span></li>
-              <li><i class="fas fa-circle-check"></i><span>Actionable authenticity insights with confidence-backed decision support.</span></li>
-              <li><i class="fas fa-circle-check"></i><span>Secure cloud architecture for enterprise-grade governance and trust.</span></li>
-            </ul>
-
-            <div class="auth-stats" role="list" aria-label="Platform performance highlights">
-              <article class="auth-stat" role="listitem">
-                <strong>97%</strong>
-                <span>Detection Accuracy</span>
-              </article>
-              <article class="auth-stat" role="listitem">
-                <strong>&lt;120s</strong>
-                <span>Avg Analysis</span>
-              </article>
-              <article class="auth-stat" role="listitem">
-                <strong>24/7</strong>
-                <span>Threat Coverage</span>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="auth-card auth-reveal" aria-label="Create account form">
-          <div class="auth-form-head">
-            <span class="auth-form-kicker"><i class="fas fa-sparkles"></i> Create Account</span>
-            <h2 class="auth-form-title">Start <span class="auth-gradient-word">detecting</span> with confidence</h2>
-            <p class="auth-form-subtitle">Set up your TruthLens AI account to launch secure deepfake detection and media validation.</p>
-          </div>
-
-          {% with messages = get_flashed_messages() %}
-            {% if messages %}
-              <div class="alert" role="alert" aria-live="polite">
-                <i class="fas fa-circle-exclamation"></i>
-                <span>{{ messages[0] }}</span>
-              </div>
-            {% endif %}
-          {% endwith %}
-
-          <form id="signupForm" method="post" class="auth-form" novalidate>
-            <div class="form-row">
-              <label class="label" for="username">Username</label>
-              <input class="input" type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required />
-            </div>
-
-            <div class="form-row">
-              <label class="label" for="email">Email Address</label>
-              <input class="input" type="email" id="email" name="email" placeholder="you@company.com" autocomplete="email" required />
-            </div>
-
-            <div class="auth-row-2">
-              <div class="form-row">
-                <label class="label" for="password1">Password</label>
-                <div class="auth-input-wrap">
-                  <input class="input" type="password" id="password1" name="password1" placeholder="Create a secure password" autocomplete="new-password" required />
-                  <button type="button" id="togglePassword1" class="input-toggle" aria-label="Show password"><i class="fas fa-eye"></i></button>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <label class="label" for="password2">Confirm Password</label>
-                <div class="auth-input-wrap">
-                  <input class="input" type="password" id="password2" name="password2" placeholder="Confirm your password" autocomplete="new-password" required />
-                  <button type="button" id="togglePassword2" class="input-toggle" aria-label="Show password"><i class="fas fa-eye"></i></button>
-                </div>
-              </div>
-            </div>
-
-            <div class="auth-strength" aria-live="polite">
-              <div class="auth-strength-meter">
-                <div id="passwordStrengthFill" class="auth-strength-fill"></div>
-              </div>
-              <p id="passwordStrengthText" class="auth-strength-text">Use at least 8 characters with mixed case, a number, and a symbol.</p>
-            </div>
-
-            <p class="auth-hint">Your account unlocks secure analysis history and enterprise-quality validation reports.</p>
-
-            <button class="btn auth-submit-btn" type="submit" data-loading-label="Creating account...">
-              <i class="fas fa-arrow-right"></i>
-              <span>Create Account</span>
-            </button>
-          </form>
-
-          <p class="auth-bottom-text">
-            Already have an account?
-            <a href="{{ url_for('login') }}" class="auth-inline-link">Secure Sign In</a>
-          </p>
-
-          <p class="auth-footer">Enterprise-grade deepfake detection and media trust infrastructure</p>
-        </section>
-      </section>
-    </main>
-  </div>
-
-  <script src="{{ url_for('static', filename='js/saas.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    </div>
 </body>
 </html>

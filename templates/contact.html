@@ -1,67 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact Support - TruthLens AI</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/saas.css') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Deepfake Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div class="container-xl topbar-inner">
-        <a href="{{ url_for('home') }}" class="brand"><span class="brand-icon"><i class="fas fa-shield-halved"></i></span><span>TruthLens AI</span></a>
-        <nav class="nav-links">
-          <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-          <a class="nav-link" href="{{ url_for('validate') }}">Validate</a>
-          <a class="nav-link active" href="#">Contact</a>
-        </nav>
-        <button id="themeToggle" class="theme-toggle" title="Theme"><i id="themeIcon" class="fas fa-moon"></i></button>
-      </div>
-    </header>
-
-    <main class="container-xl" style="flex:1;">
-      <div class="page-head">
-        <div>
-          <h1 class="page-title">Support & Contact</h1>
-          <p class="page-subtitle">Reach out for platform support, analysis issues, or integration questions.</p>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <section class="card card-pad">
-          <h2 class="card-title">Send a Message</h2>
-          <form id="contactForm" class="space-y-4">
-            <div class="form-row">
-              <label class="label">Name</label>
-              <input type="text" class="input" required />
+<body class="bg-deepfake-dark text-white min-h-screen flex items-center justify-center">
+    <div class="bg-black/30 p-8 rounded-lg shadow-xl w-96">
+        <h2 class="text-3xl text-center mb-6 text-deepfake-primary">
+            <i class="fas fa-envelope mr-3"></i>Contact Us
+        </h2>
+        
+        <form id="contactForm" class="space-y-4">
+            <div>
+                <label class="block mb-2">
+                    <i class="fas fa-user mr-2"></i>Name
+                </label>
+                <input type="text" class="w-full p-2 bg-black/50 rounded" required>
             </div>
-            <div class="form-row">
-              <label class="label">Email</label>
-              <input type="email" class="input" required />
+            <div>
+                <label class="block mb-2">
+                    <i class="fas fa-envelope mr-2"></i>Email
+                </label>
+                <input type="email" class="w-full p-2 bg-black/50 rounded" required>
             </div>
-            <div class="form-row">
-              <label class="label">Message</label>
-              <textarea class="textarea" rows="5" required></textarea>
+            <div>
+                <label class="block mb-2">
+                    <i class="fas fa-comment mr-2"></i>Message
+                </label>
+                <textarea class="w-full p-2 bg-black/50 rounded" rows="4" required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
-          </form>
-        </section>
-
-        <section class="card card-pad">
-          <h2 class="card-title">Support Information</h2>
-          <div class="timeline-item"><strong>Email Support</strong><div class="card-muted">support@truthlens.ai</div></div>
-          <div class="timeline-item"><strong>Response Time</strong><div class="card-muted">Typical response within 24 business hours</div></div>
-          <div class="timeline-item"><strong>Priority Cases</strong><div class="card-muted">Security incidents and platform outages are triaged first.</div></div>
-          <div class="timeline-item"><strong>Documentation</strong><div class="card-muted">Use your dashboard help center for usage and report guidance.</div></div>
-        </section>
-      </div>
-    </main>
-
-    <footer class="footer"><div class="container-xl">TruthLens AI support portal</div></footer>
-  </div>
-
-  <script src="{{ url_for('static', filename='js/saas.js') }}"></script>
+            <button type="submit" class="w-full bg-deepfake-secondary p-3 rounded hover:bg-opacity-80 transition">
+                Send Message
+            </button>
+        </form>
+    </div>
 </body>
 </html>

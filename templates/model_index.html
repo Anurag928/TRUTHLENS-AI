@@ -1,77 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model Overview - TruthLens AI</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/saas.css') }}" />
-</head>
-<body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div class="container-xl topbar-inner">
-        <a href="{{ url_for('home') }}" class="brand"><span class="brand-icon"><i class="fas fa-shield-halved"></i></span><span>TruthLens AI</span></a>
-        <nav class="nav-links">
-          <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-          <a class="nav-link active" href="#">Model Overview</a>
-          <a class="nav-link" href="{{ url_for('validate') }}">Validate</a>
-        </nav>
-        <button id="themeToggle" class="theme-toggle" title="Theme"><i id="themeIcon" class="fas fa-moon"></i></button>
-      </div>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deepfake Detector - Hackathon Project</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="main-container">
+      <header>
+        <h1><i class="fas fa-shield-alt"></i> Deepfake Detector</h1>
+        <p>Upload a video or audio file to check for deepfakes.</p>
+      </header>
 
-    <main class="container-xl" style="flex:1;">
-      <div class="page-head">
-        <div>
-          <h1 class="page-title">AI Model System Overview</h1>
-          <p class="page-subtitle">Technical interface for model input control and analysis workflow visibility.</p>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <section class="card card-pad">
-          <h2 class="card-title">Run Model Inference</h2>
-          <form method="POST" action="/" enctype="multipart/form-data">
-            <div class="form-row">
-              <label class="label" for="video_file">Video File</label>
-              <input class="input" type="file" name="video_file" id="video_file" required />
-            </div>
-            <div class="form-row">
-              <label class="label" for="sequence_length">Sequence Length</label>
-              <input class="input" type="number" name="sequence_length" id="sequence_length" value="60" required />
-            </div>
-            <button class="btn btn-primary" type="submit"><i class="fas fa-play"></i> Upload & Analyze</button>
-          </form>
-        </section>
-
-        <section class="card card-pad">
-          <h2 class="card-title">Model Health & Performance</h2>
-          <div class="stat"><div class="stat-icon" style="background:#3b82f6;"><i class="fas fa-microchip"></i></div><div><div class="card-muted">Backbone</div><div>CNN + Temporal Sequence Model</div></div></div>
-          <div class="stat" style="margin-top:10px;"><div class="stat-icon" style="background:#10b981;"><i class="fas fa-gauge-high"></i></div><div><div class="card-muted">Inference Status</div><div>Operational</div></div><span class="badge success">Healthy</span></div>
-          <div class="stat" style="margin-top:10px;"><div class="stat-icon" style="background:#f59e0b;"><i class="fas fa-percent"></i></div><div><div class="card-muted">Confidence Interpretation</div><div>Calibrated probability estimate</div></div></div>
-        </section>
+      <div class="upload-section">
+        <form method="POST" action="/" enctype="multipart/form-data">
+          <input type="file" name="video_file" required />
+          <input type="number" name="sequence_length" value="60" required />
+          <button type="submit">Upload Video</button>
+        </form>
       </div>
 
-      <section class="card card-pad section-space">
-        <h2 class="card-title">Result Preview</h2>
-        <div id="result" class="card-muted">Run an analysis to populate model output summary.</div>
-      </section>
+      <div id="result" class="result"></div>
 
-      <section class="card card-pad section-space">
-        <h2 class="card-title">Uploaded Media Preview</h2>
-        <div class="card card-pad" style="padding:12px;">
-          <video id="uploadedVideo" controls style="width:100%;max-height:420px;border-radius:10px;background:#000;">
-            <source src="" type="video/mp4" />
-          </video>
-        </div>
-      </section>
-    </main>
+      <div class="video-container">
+        <video id="uploadedVideo" controls>
+          <source src="" type="video/mp4" />
+        </video>
+      </div>
+    </div>
 
-    <footer class="footer"><div class="container-xl">TruthLens AI model workspace</div></footer>
-  </div>
+    <footer>
+      <p>Made with ❤️ by [Your Team Name] for National Hackathon 2024</p>
+    </footer>
 
-  <script src="{{ url_for('static', filename='js/saas.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
 </html>

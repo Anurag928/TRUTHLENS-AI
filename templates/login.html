@@ -1,146 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign In - TruthLens AI</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/saas.css') }}" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Deepfake Detection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="auth-page login-page">
-  <div class="auth-bg" aria-hidden="true">
-    <span class="auth-orb one"></span>
-    <span class="auth-orb two"></span>
-    <span class="auth-grid-overlay"></span>
-  </div>
-
-  <div class="app-shell">
-    <header class="topbar">
-      <div class="container-xl topbar-inner">
-        <a href="{{ url_for('home') }}" class="brand">
-          <span class="brand-icon"><i class="fas fa-shield-halved"></i></span>
-          <span>TruthLens AI</span>
+<body class="bg-gradient-to-br from-gray-900 via-black to-blue-900 min-h-screen flex items-center justify-center">
+    <nav class="w-full bg-gray-800 text-white p-4 flex items-center justify-between shadow-lg fixed top-0 left-0 z-50">
+        <a href="MainPage.html" class="text-xl font-bold hover:text-blue-400 transition">
+            Home
         </a>
+        <h1 class="text-lg font-semibold">Deepfake Detection</h1>
+    </nav>
+    
+    <div class="container mx-auto px-4">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden max-w-md mx-auto">
+            <div class="p-8 bg-gray-700 flex flex-col justify-center">
+                <h2 class="text-3xl font-bold text-center mb-6 text-blue-400">
+                    <i class="fas fa-sign-in-alt mr-3"></i>Login
+                </h2>
+                
+                <form id="loginForm" class="space-y-4" method="post">
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+                        <input type="text" id="username" name="username" placeholder="Username" 
+                            class="w-full pl-10 p-3 bg-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+                        <input type="password" name="password" id="password" placeholder="Password" 
+                            class="w-full pl-10 p-3 bg-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 py-2 px-4 text-sm rounded-lg hover:bg-blue-700 transition transform hover:scale-105 mt-6">
+                        Login
+                    </button>
+                    
+                </form>
 
-        <nav class="nav-links">
-          <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-          {% if current_user.is_authenticated %}
-            <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
-            <a class="nav-link" href="{{ url_for('validate') }}">Validate</a>
-            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-          {% else %}
-            <a class="nav-link active" href="{{ url_for('login') }}">Sign In</a>
-            <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
-          {% endif %}
-        </nav>
-
-        <div class="nav-actions">
-          <button id="themeToggle" class="theme-toggle" title="Toggle theme"><i id="themeIcon" class="fas fa-moon"></i></button>
-          <button id="mobileNavToggle" class="theme-toggle mobile-nav-toggle" aria-label="Open navigation menu"><i class="fas fa-bars"></i></button>
+                <div class="mt-6 text-center">
+                    <p class="text-gray-300">Don't have an account? 
+                        <a href={{ url_for("signup")}} class="text-green-400 hover:underline">Sign up</a>
+                    </p>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div id="mobileNav" class="container-xl mobile-nav">
-        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-        {% if current_user.is_authenticated %}
-          <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
-          <a class="nav-link" href="{{ url_for('validate') }}">Validate</a>
-          <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-          <a class="nav-link active" href="{{ url_for('login') }}">Sign In</a>
-          <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
-        {% endif %}
-      </div>
-    </header>
-
-    <main class="auth-main">
-      <section class="auth-layout" aria-label="Sign in experience">
-        <section class="auth-brand-panel auth-reveal d2" aria-label="TruthLens AI benefits">
-          <div class="auth-brand-content">
-            <span class="auth-chip"><i class="fas fa-lock"></i> Enterprise Security Layer</span>
-            <h1 class="auth-brand-title">Welcome back to your <span class="auth-gradient-word">trusted</span> verification workspace.</h1>
-            <p class="auth-brand-copy">Re-enter your control center for forensic media analysis, risk scoring, and continuous authenticity monitoring built for modern AI threats.</p>
-
-            <ul class="auth-feature-list">
-              <li><i class="fas fa-circle-check"></i><span>Fast upload-to-result flow designed for daily validation operations.</span></li>
-              <li><i class="fas fa-circle-check"></i><span>Audit-ready intelligence across manipulated and authentic media outcomes.</span></li>
-              <li><i class="fas fa-circle-check"></i><span>Secure identity controls built for enterprise-grade deployment teams.</span></li>
-            </ul>
-
-            <div class="auth-stats" role="list" aria-label="Trust indicators">
-              <article class="auth-stat" role="listitem">
-                <strong>99.9%</strong>
-                <span>Service Uptime</span>
-              </article>
-              <article class="auth-stat" role="listitem">
-                <strong>AES-256</strong>
-                <span>Data Security</span>
-              </article>
-              <article class="auth-stat" role="listitem">
-                <strong>Zero Lag</strong>
-                <span>Realtime Queue</span>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section class="auth-card auth-reveal" aria-label="Sign in form">
-          <div class="auth-form-head">
-            <span class="auth-form-kicker"><i class="fas fa-shield"></i> Secure Sign In</span>
-            <h2 class="auth-form-title">Access your <span class="auth-gradient-word">detection</span> console</h2>
-            <p class="auth-form-subtitle">Continue with your TruthLens AI credentials to manage media validation and threat analysis.</p>
-          </div>
-
-          {% with messages = get_flashed_messages() %}
-            {% if messages %}
-              <div class="alert" role="alert" aria-live="polite">
-                <i class="fas fa-circle-exclamation"></i>
-                <span>{{ messages[0] }}</span>
-              </div>
-            {% endif %}
-          {% endwith %}
-
-          <form id="loginForm" method="post" class="auth-form" novalidate>
-            <div class="form-row">
-              <label class="label" for="username">Username</label>
-              <input class="input" type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required />
-            </div>
-
-            <div class="form-row">
-              <label class="label" for="password">Password</label>
-              <div class="auth-input-wrap">
-                <input class="input" type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required />
-                <button type="button" id="togglePassword" class="input-toggle" aria-label="Show password"><i class="fas fa-eye"></i></button>
-              </div>
-            </div>
-
-            <div class="auth-meta-row">
-              <label class="auth-checkbox">
-                <input type="checkbox" name="remember" />
-                <span>Remember me on this device</span>
-              </label>
-              <a href="#" class="auth-link">Forgot password?</a>
-            </div>
-
-            <button class="btn auth-submit-btn" type="submit" data-loading-label="Authenticating...">
-              <i class="fas fa-arrow-right"></i>
-              <span>Sign In</span>
-            </button>
-          </form>
-
-          <p class="auth-bottom-text">
-            New to TruthLens AI?
-            <a href="{{ url_for('signup') }}" class="auth-inline-link">Create Account</a>
-          </p>
-
-          <p class="auth-footer">High-trust deepfake detection for enterprise media workflows</p>
-        </section>
-      </section>
-    </main>
-  </div>
-
-  <script src="{{ url_for('static', filename='js/saas.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    </div>
 </body>
 </html>

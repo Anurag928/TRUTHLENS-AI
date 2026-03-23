@@ -1,162 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Deepfake Detection</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-gray-900 text-white">
-    <div class="container mx-auto flex justify-between items-center p-4">
-      <div class="flex items-center space-x-4">
-        <img
-          src="/api/placeholder/50/50"
-          alt="Logo"
-          class="h-10 w-10 rounded-full"
-        />
-        <h1 class="text-2xl font-bold text-blue-400">Deepfake Detection</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validate Video - TruthLens AI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/saas.css') }}" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="container-xl topbar-inner">
+        <a href="{{ url_for('home') }}" class="brand"><span class="brand-icon"><i class="fas fa-shield-halved"></i></span><span>TruthLens AI</span></a>
+        <nav class="nav-links">
+          <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+          <a class="nav-link active" href="{{ url_for('validate') }}">Validate</a>
+          <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+        </nav>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="themeToggle" class="theme-toggle" title="Theme"><i id="themeIcon" class="fas fa-moon"></i></button>
+          <button id="mobileNavToggle" class="theme-toggle mobile-nav-toggle"><i class="fas fa-bars"></i></button>
+        </div>
       </div>
-      <nav>
-        <a href={{url_for("home")}} class="hover:text-deepfake-secondary transition">
-          <i class="fas fa-home mr-2"></i>Home
-        </a>
-        <a href="/profile"class="hover:text-deepfake-secondary transition">
-          <i class="fas fa-user-circle mr-2"></i>Profile
-        </a>
-      </nav>
-    </div>
+      <div id="mobileNav" class="container-xl mobile-nav">
+        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+        <a class="nav-link active" href="{{ url_for('validate') }}">Validate</a>
+        <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+      </div>
+    </header>
 
-    <main class="container mx-auto mt-16 px-4 animate-fade-in">
-      <section
-        class="max-w-2xl mx-auto bg-gray-800/70 p-8 rounded-lg shadow-xl"
-      >
-        <h2 class="text-4xl font-bold mb-6 text-center text-blue-400">
-          Validate Your Video
-        </h2>
-        <p class="text-center mb-4">
-          Upload a video to check if it's a potential deepfake
-        </p>
-        <form
-          action="{{ url_for('validate') }}"
-          method="POST"
-          enctype="multipart/form-data"
-        >
-          <div
-            class="border-dashed border-2 border-blue-400 rounded-lg p-8 text-center mb-4"
-          >
-            <input
-              type="file"
-              id="videoUpload"
-              accept=".mp4,.avi,.mov,.webm"
-              class="hidden"
-              onchange="previewVideo(event)"
-              name="video_file"
-              required
-            />
+    <main class="container-xl" style="flex:1;">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Validation Workspace</h1>
+          <p class="page-subtitle">Upload secure media, monitor AI analysis progress, and receive a trustworthy report.</p>
+        </div>
+      </div>
 
-            <label
-              for="videoUpload"
-              class="cursor-pointer inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-            >
-              Select Video File
-            </label>
-            <p class="mt-2 text-sm text-gray-400">
-              Supported formats: MP4, AVI, MOV, WebM (Max 1GB)
-            </p>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="card card-pad" style="margin-bottom:14px;border-color:rgba(239,68,68,.5);">
+            <span class="badge danger">{{ messages[0] }}</span>
           </div>
+        {% endif %}
+      {% endwith %}
 
-          <div id="videoPreviewContainer" class="hidden mb-4">
-            <video id="videoPreview" controls class="w-full rounded-lg"></video>
-            <div
-              id="fileInfo"
-              class="mt-2 text-center text-sm text-gray-300"
-            ></div>
+      <div class="grid-2">
+        <section class="card card-pad analysis-workflow">
+          <h2 class="card-title"><i class="fas fa-cloud-arrow-up"></i> Upload Video</h2>
+          <p class="card-muted">Supported formats: MP4, AVI, MOV, WebM. Maximum size: 1GB.</p>
+
+          <form id="analysisForm" action="{{ url_for('validate') }}" method="POST" enctype="multipart/form-data" style="margin-top:14px;">
+            <input type="hidden" name="simulation_mode" id="simulationModeInput" value="0" />
+            <div id="uploadDropzone" class="upload-dropzone">
+              <input
+                type="file"
+                id="videoUpload"
+                accept=".mp4,.avi,.mov,.webm"
+                class="hidden"
+                onchange="previewVideo(event)"
+                name="video_file"
+              />
+              <label for="videoUpload" class="btn btn-primary" style="display:inline-flex;"><i class="fas fa-folder-open"></i> Select Video File</label>
+              <p class="card-muted" style="margin:10px 0 0;">or drag and drop your file here</p>
+            </div>
+
+            <div id="videoPreviewContainer" class="hidden section-space card card-pad" style="padding:14px;">
+              <video id="videoPreview" controls style="width:100%;border-radius:10px;border:1px solid var(--border);"></video>
+              <div id="fileInfo" class="card-muted" style="margin-top:8px;"></div>
+              <div id="previewError" class="analysis-error" style="margin-top:8px;">
+                This video cannot be previewed in the browser (codec/format limitation). You can still analyze it.
+              </div>
+              <div class="analysis-pill success" style="margin-top:8px;"><i class="fas fa-check-circle"></i> Video accepted and ready for analysis</div>
+            </div>
+
+            <div class="simulation-toggle section-space">
+              <div class="simulation-toggle-head">
+                <div>
+                  <div class="label" style="margin:0;">Prediction Mode</div>
+                  <div class="card-muted" style="margin-top:2px;font-size:.82rem;">Switch between real model inference and clearly-labeled simulation mode.</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="simulationModeSwitch" />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div id="simulationModeNotice" class="card-muted" style="margin-top:8px;">
+                Real Model Mode active.
+              </div>
+            </div>
+
+            {% if demo_mode %}
+              <div class="demo-mode-panel">
+                <div class="demo-mode-title"><i class="fas fa-vial-circle-check"></i> Demo/Test Mode Enabled</div>
+                <div class="card-muted" style="margin-top:4px;">Only files whose name contains <strong>rc</strong> return a simulated Demo Result marked as Original. All other files run the real model pipeline.</div>
+              </div>
+            {% endif %}
+
+            <div class="analysis-status" id="analysisStatus">
+              <div class="analysis-status-head">
+                <div>
+                  <div class="label" style="margin:0;">Analysis Status</div>
+                  <div id="analysisStatusText">Idle: select a file to begin analysis.</div>
+                </div>
+                <span id="analysisStateBadge" class="analysis-pill"><i class="fas fa-circle"></i> Idle</span>
+              </div>
+              <div class="analysis-progress"><div id="analysisProgressBar" class="analysis-progress-bar"></div></div>
+              <div class="analysis-steps" id="analysisSteps">
+                <div class="analysis-step" data-step="0"><i class="fas fa-cloud-upload-alt"></i> Uploading secure media</div>
+                <div class="analysis-step" data-step="1"><i class="fas fa-film"></i> Extracting video frames</div>
+                <div class="analysis-step" data-step="2"><i class="fas fa-brain"></i> Running AI authenticity checks</div>
+                <div class="analysis-step" data-step="3"><i class="fas fa-shield-halved"></i> Evaluating manipulation patterns</div>
+                <div class="analysis-step" data-step="4"><i class="fas fa-file-lines"></i> Preparing final result</div>
+              </div>
+              <div id="analysisError" class="analysis-error">
+                <span id="errorMessage">Analysis is taking longer than expected. Your request may still be processing.</span>
+                <button id="retryAnalysisBtn" type="button" class="btn btn-ghost" style="margin-left:8px;padding:5px 9px;font-size:.75rem;">Retry</button>
+              </div>
+            </div>
+
+            <button id="analyzeButton" type="submit" class="btn btn-primary" style="width:100%;margin-top:14px;" disabled>
+              <i class="fas fa-magnifying-glass-chart"></i> Start Prediction
+            </button>
+          </form>
+        </section>
+
+        <section class="card card-pad">
+          <h2 class="card-title"><i class="fas fa-shield-check"></i> Validation Guidance</h2>
+          <div class="timeline-item"><strong>Upload quality source</strong><div class="card-muted">Higher quality and stable frame rate can improve model consistency.</div></div>
+          <div class="timeline-item"><strong>Wait for complete processing</strong><div class="card-muted">Do not refresh during active analysis to avoid interrupted flow.</div></div>
+          <div class="timeline-item"><strong>Review confidence carefully</strong><div class="card-muted">Confidence is model-based and should be interpreted with context.</div></div>
+
+          <div class="section-space">
+            <div class="stat"><div class="stat-icon" style="background:#3b82f6;"><i class="fas fa-video"></i></div><div><div class="card-muted">Formats</div><div>MP4, AVI, MOV, WebM</div></div></div>
+            <div class="stat" style="margin-top:10px;"><div class="stat-icon" style="background:#14b8a6;"><i class="fas fa-weight-scale"></i></div><div><div class="card-muted">Maximum Size</div><div>1 GB</div></div></div>
+            <div class="stat" style="margin-top:10px;"><div class="stat-icon" style="background:#f59e0b;"><i class="fas fa-file-shield"></i></div><div><div class="card-muted">Report Output</div><div>AI analysis report</div></div></div>
           </div>
-
-          <button
-            id="analyzeButton"
-            type="submit"
-            class="w-full py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-50"
-            disabled
-          >
-            Start Deepfake Analysis
-          </button>
-        </form>
-      </section>
+        </section>
+      </div>
     </main>
 
-    <footer class="container mx-auto mt-8 text-center">
-      <div class="flex justify-center space-x-4">
-        <a href="#" class="text-gray-400 hover:text-blue-300">Privacy Policy</a>
-        <a href="#" class="text-gray-400 hover:text-blue-300"
-          >Terms of Service</a
-        >
-      </div>
-      <p class="mt-4 text-gray-500">
-        © 2024 Deepfake Detection. All rights reserved.
-      </p>
-    </footer>
+    <footer class="footer"><div class="container-xl">© 2024 TruthLens AI - Validation Portal</div></footer>
+  </div>
 
-    <script>
-      function previewVideo(event) {
-        const file = event.target.files[0];
-        const videoPreview = document.getElementById("videoPreview");
-        const videoPreviewContainer = document.getElementById(
-          "videoPreviewContainer"
-        );
-        const fileInfo = document.getElementById("fileInfo");
-        const analyzeButton = document.getElementById("analyzeButton");
+  <script src="{{ url_for('static', filename='js/saas.js') }}"></script>
+  <script>
+    const analysisForm = document.getElementById('analysisForm');
+    const progressBar = document.getElementById('analysisProgressBar');
+    const statusText = document.getElementById('analysisStatusText');
+    const statusBadge = document.getElementById('analysisStateBadge');
+    const errorBox = document.getElementById('analysisError');
+    const retryBtn = document.getElementById('retryAnalysisBtn');
+    const simulationSwitch = document.getElementById('simulationModeSwitch');
+    const simulationModeInput = document.getElementById('simulationModeInput');
+    const simulationNotice = document.getElementById('simulationModeNotice');
+    let currentPreviewUrl = null;
+    let isSubmitting = false;
+    let stateTimers = [];
 
-        if (file) {
-          // Check file size (1GB = 1024 * 1024 * 1024 bytes)
-          if (file.size > 1024 * 1024 * 1024) {
-            alert("File is too large. Maximum file size is 1GB.");
-            event.target.value = ""; // Clear the file input
-            return;
-          }
+    function clearStateTimers() {
+      stateTimers.forEach((t) => clearTimeout(t));
+      stateTimers = [];
+    }
 
-          // Check file type
-          const validTypes = [
-            "video/mp4",
-            "video/avi",
-            "video/quicktime",
-            "video/webm",
-          ];
-          if (!validTypes.includes(file.type)) {
-            alert(
-              "Invalid file type. Supported formats are MP4, AVI, MOV, WebM."
-            );
-            event.target.value = ""; // Clear the file input
-            return;
-          }
+    function setBadge(text, type) {
+      statusBadge.classList.remove('success', 'error');
+      if (type) statusBadge.classList.add(type);
+      statusBadge.innerHTML = '<i class="fas fa-circle"></i> ' + text;
+    }
 
-          // Create object URL for video preview
-          const objectURL = URL.createObjectURL(file);
-          videoPreview.src = objectURL;
+    function setProgressState(step, pct, text) {
+      const steps = Array.from(document.querySelectorAll('.analysis-step'));
+      steps.forEach((el, idx) => {
+        el.classList.remove('active');
+        if (idx < step) el.classList.add('done');
+        else el.classList.remove('done');
+        if (idx === step) el.classList.add('active');
+      });
+      progressBar.style.width = pct + '%';
+      statusText.textContent = text;
+    }
 
-          // Show video preview container
-          videoPreviewContainer.classList.remove("hidden");
+    function isSimulationMode() {
+      return simulationSwitch && simulationSwitch.checked;
+    }
 
-          // Display file information
-          fileInfo.textContent = `${file.name} - ${(
-            file.size /
-            1024 /
-            1024
-          ).toFixed(2)} MB`;
+    function refreshSubmitAvailability() {
+      const fileInput = document.getElementById('videoUpload');
+      const fileOk = fileInput && fileInput.files && fileInput.files.length > 0;
+      document.getElementById('analyzeButton').disabled = !fileOk || isSubmitting;
 
-          // Enable analyze button
-          analyzeButton.disabled = false;
-
-          // Clean up the object URL when video is loaded to free up memory
-          videoPreview.onloadedmetadata = () => {
-            URL.revokeObjectURL(objectURL);
-          };
-        }
+      if (isSimulationMode() && fileOk) {
+        statusText.textContent = 'Simulation mode is active. A staged 7-second simulated analysis will run.';
+        setBadge('Simulation Ready', 'success');
+      } else if (fileOk) {
+        statusText.textContent = 'File selected and ready. Click Start Analysis to begin.';
+        setBadge('Ready', 'success');
+      } else {
+        statusText.textContent = 'Idle: select a file to begin analysis.';
+        setBadge('Idle');
       }
-    </script>
-  </body>
+    }
+
+    function previewVideo(event) {
+      const file = event.target.files[0];
+      const videoPreview = document.getElementById('videoPreview');
+      const videoPreviewContainer = document.getElementById('videoPreviewContainer');
+      const fileInfo = document.getElementById('fileInfo');
+      const previewError = document.getElementById('previewError');
+      const analyzeButton = document.getElementById('analyzeButton');
+
+      if (file) {
+        if (file.size > 1024 * 1024 * 1024) {
+          alert('File is too large. Maximum file size is 1GB.');
+          event.target.value = '';
+          refreshSubmitAvailability();
+          return;
+        }
+
+        const validTypes = ['video/mp4', 'video/avi', 'video/x-msvideo', 'video/msvideo', 'video/quicktime', 'video/webm'];
+        const fileName = (file.name || '').toLowerCase();
+        const hasValidExtension = ['.mp4', '.avi', '.mov', '.webm'].some((ext) => fileName.endsWith(ext));
+        const hasValidType = !file.type || validTypes.includes(file.type);
+        if (!hasValidType && !hasValidExtension) {
+          alert('Invalid file type. Supported formats are MP4, AVI, MOV, WebM.');
+          event.target.value = '';
+          refreshSubmitAvailability();
+          return;
+        }
+
+        const objectURL = URL.createObjectURL(file);
+        if (currentPreviewUrl) {
+          URL.revokeObjectURL(currentPreviewUrl);
+        }
+        currentPreviewUrl = objectURL;
+
+        videoPreview.src = objectURL;
+        videoPreview.load();
+        videoPreviewContainer.classList.remove('hidden');
+        previewError.classList.remove('show');
+        fileInfo.textContent = `${file.name} - ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+        analyzeButton.disabled = false;
+        setProgressState(0, 10, 'File accepted. Ready to start analysis.');
+        setBadge('File Selected', 'success');
+
+        videoPreview.onloadeddata = () => {
+          previewError.classList.remove('show');
+        };
+
+        videoPreview.onerror = () => {
+          previewError.classList.add('show');
+        };
+      }
+      refreshSubmitAvailability();
+    }
+
+    window.addEventListener('beforeunload', function () {
+      if (currentPreviewUrl) {
+        URL.revokeObjectURL(currentPreviewUrl);
+        currentPreviewUrl = null;
+      }
+    });
+
+    if (retryBtn) {
+      retryBtn.addEventListener('click', function () {
+        window.location.reload();
+      });
+    }
+
+    if (simulationSwitch) {
+      simulationSwitch.addEventListener('change', function () {
+        simulationModeInput.value = simulationSwitch.checked ? '1' : '0';
+        if (simulationSwitch.checked) {
+          simulationNotice.textContent = 'Simulation Mode active: 7-second staged analysis and filename-based simulated output.';
+        } else {
+          simulationNotice.textContent = 'Real Model Mode active.';
+        }
+        refreshSubmitAvailability();
+      });
+    }
+
+    if (analysisForm) {
+      analysisForm.addEventListener('submit', function (event) {
+        if (isSubmitting) {
+          event.preventDefault();
+          return;
+        }
+
+        const fileInput = document.getElementById('videoUpload');
+        const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+        const usingSimulation = isSimulationMode();
+
+        if (!hasFile) {
+          event.preventDefault();
+          alert('Please select a video file to start analysis.');
+          return;
+        }
+
+        event.preventDefault();
+
+        isSubmitting = true;
+        const btn = document.getElementById('analyzeButton');
+        btn.disabled = true;
+        btn.classList.add('btn-loading');
+        btn.setAttribute('aria-busy', 'true');
+        btn.innerHTML = usingSimulation ? 'Running Simulation' : 'Uploading Video';
+
+        errorBox.classList.remove('show');
+        clearStateTimers();
+
+        if (usingSimulation) {
+          const simulationStages = [
+            { step: 0, pct: 14, text: 'Uploading file...' },
+            { step: 1, pct: 30, text: 'Extracting frames...' },
+            { step: 2, pct: 48, text: 'Analyzing visual consistency...' },
+            { step: 3, pct: 66, text: 'Evaluating facial patterns...' },
+            { step: 4, pct: 86, text: 'Generating final result...' }
+          ];
+          const stageMs = 1400;
+
+          setBadge('Simulation Running');
+          btn.innerHTML = 'Running 7s Simulation';
+
+          simulationStages.forEach((stage, index) => {
+            stateTimers.push(setTimeout(() => {
+              setProgressState(stage.step, stage.pct, stage.text);
+            }, index * stageMs));
+          });
+
+          stateTimers.push(setTimeout(() => {
+            progressBar.style.width = '100%';
+            statusText.textContent = 'Simulation complete. Redirecting to report...';
+            setBadge('Complete', 'success');
+            analysisForm.submit();
+          }, 7000));
+        } else {
+          setBadge('Processing');
+          setProgressState(0, 16, 'Uploading secure media...');
+
+          stateTimers.push(setTimeout(() => {
+            setProgressState(1, 34, 'Extracting frames...');
+          }, 600));
+
+          stateTimers.push(setTimeout(() => {
+            setProgressState(2, 56, 'Running model inference...');
+          }, 1400));
+
+          stateTimers.push(setTimeout(() => {
+            setProgressState(3, 78, 'Aggregating predictions...');
+          }, 2400));
+
+          stateTimers.push(setTimeout(() => {
+            setProgressState(4, 90, 'Generating explanation...');
+          }, 3400));
+
+          stateTimers.push(setTimeout(() => {
+            analysisForm.submit();
+          }, 4500));
+        }
+      });
+    }
+
+    refreshSubmitAvailability();
+  </script>
+</body>
 </html>

@@ -1,12 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <h1>Prediction:{{prediction}}</h1>
-    <h1>Confidence:{{confidence}}</h1>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Result - TruthLens AI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/saas.css') }}" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="container-xl topbar-inner">
+        <a href="{{ url_for('home') }}" class="brand"><span class="brand-icon"><i class="fas fa-shield-halved"></i></span><span>TruthLens AI</span></a>
+        <nav class="nav-links">
+          <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+          <a class="nav-link" href="{{ url_for('validate') }}">Validate</a>
+          <a class="nav-link active" href="#">Result</a>
+        </nav>
+        <button id="themeToggle" class="theme-toggle" title="Theme"><i id="themeIcon" class="fas fa-moon"></i></button>
+      </div>
+    </header>
+
+    <main class="container-xl" style="flex:1;display:grid;place-items:center;padding:36px 0;">
+      <section class="card card-pad" style="width:min(620px,100%);">
+        <h1 class="page-title" style="margin:0 0 12px;">Quick Prediction Summary</h1>
+        <p class="page-subtitle">Secondary result page aligned with the main analysis experience.</p>
+
+        <div class="section-space stat">
+          <div class="stat-icon" style="background:#3b82f6;"><i class="fas fa-magnifying-glass-chart"></i></div>
+          <div>
+            <div class="card-muted">Prediction</div>
+            <div style="font-size:1.15rem;font-weight:700;">{{ prediction }}</div>
+          </div>
+        </div>
+
+        <div class="section-space stat">
+          <div class="stat-icon" style="background:#14b8a6;"><i class="fas fa-percent"></i></div>
+          <div>
+            <div class="card-muted">Confidence</div>
+            <div style="font-size:1.15rem;font-weight:700;">{{ confidence }}%</div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+          <a class="btn btn-primary" href="{{ url_for('validate') }}"><i class="fas fa-upload"></i> Analyze Another Video</a>
+          <a class="btn btn-ghost" href="{{ url_for('home') }}"><i class="fas fa-house"></i> Back Home</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer"><div class="container-xl">TruthLens AI quick results view</div></footer>
+  </div>
+  <script src="{{ url_for('static', filename='js/saas.js') }}"></script>
+</body>
 </html>

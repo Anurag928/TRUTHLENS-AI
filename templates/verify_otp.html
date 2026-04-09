@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email | TruthLens AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylestotal.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</head>
+<body>
+    <div class="app-bg-grid"></div>
+    <div class="app-bg-noise"></div>
+    <div class="app-bg-glow"></div>
+
+    <main class="page auth-wrap">
+        <section class="auth-brand reveal">
+            <span class="kicker">Verify Your Email</span>
+            <h1 style="margin-top: 10px;">Enter the OTP sent to your address.</h1>
+            <p>
+                We sent a 4-digit code to <strong>{{ email }}</strong>. It expires in {{ time_left }} seconds.
+            </p>
+            <div class="card card-quiet" style="margin-top: 18px;">
+                <h3>OTP verification</h3>
+                <ul class="list-clean">
+                    <li>Enter the code exactly as received.</li>
+                    <li>OTP expires after 30 seconds.</li>
+                    <li>You can request a fresh code if it expires or is incorrect.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="auth-card reveal">
+            <span class="kicker">Confirm your account</span>
+            <h2 style="margin: 8px 0 16px;">Secure signup with email verification</h2>
+
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="flash">{{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form class="form-stack" method="post" id="otp-form">
+                <div class="field">
+                    <label>4-digit OTP</label>
+                    <input class="input" type="text" id="otp" name="otp" inputmode="numeric" pattern="\d{4}" maxlength="4" autocomplete="one-time-code" placeholder="Enter 4-digit OTP" style="letter-spacing: 0.2em; text-align: center; font-size: 1.25rem; font-weight: 600;" required autofocus>
+                </div>
+                <button class="btn btn-primary" type="submit">Verify OTP</button>
+                <button class="btn btn-ghost" type="submit" name="resend" value="true" style="margin-top: 10px;">Resend OTP</button>
+            </form>
+
+            <p class="small" style="margin-top: 16px;">
+                Already have an account?
+                <a href="{{ url_for('login') }}" style="color: #d7e3ff;">Log in</a>
+            </p>
+        </section>
+    </main>
+</body>
+</html>

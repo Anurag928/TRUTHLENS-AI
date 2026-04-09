@@ -1,22 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processing Scan | TruthLens AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylestotal.css') }}">
-    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
-<script>
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-    </script>
-</head>
-<body>
-    <div class="app-bg-grid"></div>
-    <div class="app-bg-noise"></div>
-    <div class="app-bg-glow"></div>
+import os
+import glob
+import re
 
-    <header class="navbar page">
+dir_path = r"c:\Users\shiva\OneDrive\Desktop\TRUTHLENS AI\Deepfake-Detection\templates"
+files = glob.glob(os.path.join(dir_path, "*.html"))
+
+nav_template = '''<header class="navbar page">
         <div class="nav-shell">
             <a class="brand" href="{{ url_for('home') }}"><span class="brand-dot"></span><span>TruthLens AI</span></a>
             <nav class="nav-links">
@@ -48,31 +37,26 @@
             <a href="{{ url_for('login') }}" style="color: var(--accent-2);">Login / Signup</a>
             {% endif %}
         </div>
-    </header>
+    </header>'''
+    
+theme_script = '''<script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</head>'''
 
-    <main class="page section" data-processing data-redirect="{{ url_for('result_page') }}">
-        <section class="grid-2">
-            <article class="card reveal">
-                <span class="kicker">Analysis In Progress</span>
-                <h1 style="margin-top: 8px;">Your video is being analyzed</h1>
-                <p data-processing-label>Preparing forensic pipeline</p>
-                <div class="scan-ring" style="margin-top: 24px;"></div>
-                <div class="progress" data-processing-progress style="margin-top: 20px;"><span style="--p: 0%"></span></div>
-                <p class="small" style="margin-top: 10px;">Keep this page open while the result dashboard is generated.</p>
-            </article>
+for filepath in files:
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
 
-            <aside class="card reveal">
-                <span class="kicker">Processing Stages</span>
-                <h2 style="margin-top: 8px;">Forensic scan timeline</h2>
-                <div class="timeline" style="margin-top: 16px;">
-                    <div class="timeline-step">Extracting frames</div>
-                    <div class="timeline-step">Detecting facial regions</div>
-                    <div class="timeline-step">Analyzing inconsistencies</div>
-                    <div class="timeline-step">Evaluating temporal patterns</div>
-                    <div class="timeline-step">Finalizing result package</div>
-                </div>
-            </aside>
-        </section>
-    </main>
-</body>
-</html>
+    # Replace <header>...</header>
+    content = re.sub(r'<header class="navbar page">.*?</header>', nav_template, content, flags=re.DOTALL)
+    
+    # Inject theme script just before </head> if not already there
+    if 'localStorage.getItem(\'theme\')' not in content:
+        content = content.replace("</head>", theme_script)
+        
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(content)
+        
+print("Updated all templates")

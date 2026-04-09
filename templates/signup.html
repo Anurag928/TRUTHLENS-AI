@@ -3,40 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - Deepfake Detection</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Create Account | TruthLens AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylestotal.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-black to-green-900 min-h-screen flex items-center justify-center">
-    <div class="container mx-auto px-4">
-        <div class="bg-gray-800 rounded-2xl shadow-2xl overflow-hidden max-w-md mx-auto">
-            <div class="p-8 bg-gray-800 flex flex-col justify-center">
-                <h2 class="text-3xl font-bold text-center mb-6 text-green-400">
-                    <i class="fas fa-user-plus mr-3"></i>Sign Up
-                </h2>
-                
-                <form id="signupForm" class="space-y-4 form"  method="post" enctype="multipart/form-data">
-                    <input type="text" placeholder="Full Name" id="username" name="username"
-                        class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                    <input type="email" placeholder="Email" id="email" name="email" 
-                        class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                    <input type="password" placeholder="Password" id="password1" name="password1"
-                        class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                    <input type="password" placeholder="Confirm Password"  id="password2" name="password2"
-                        class="w-full p-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
-                    <button type="submit" class="w-full bg-green-600 py-2 px-4 text-sm rounded-lg hover:bg-green-700 transition transform hover:scale-105 mt-4">
-                        Create Account
-                    </button>
-                    
-                </form>
+<body>
+    <div class="app-bg-grid"></div>
+    <div class="app-bg-noise"></div>
+    <div class="app-bg-glow"></div>
 
-                <div class="mt-6 text-center">
-                    <p class="text-gray-300">Already have an account? 
-                        <a href={{url_for("login")}} class="text-blue-400 hover:underline">Login</a>
-                    </p>
-                </div>
+    <main class="page auth-wrap">
+        <section class="auth-brand reveal">
+            <span class="kicker">Create Workspace Access</span>
+            <h1 style="margin-top: 10px;">Start validating media with a secure account.</h1>
+            <p>
+                Sign up to store scan history, return to previous verdicts, and continue analysis from a single dashboard.
+            </p>
+            <div class="card card-quiet" style="margin-top: 18px;">
+                <h3>What you get after sign up</h3>
+                <ul class="list-clean">
+                    <li>Guided upload and analysis workflow</li>
+                    <li>Risk-labeled results with confidence scoring</li>
+                    <li>Recent scan history in your profile</li>
+                </ul>
             </div>
-        </div>
-    </div>
+        </section>
+
+        <section class="auth-card reveal">
+            <span class="kicker">New Account</span>
+            <h2 style="margin: 8px 0 16px;">Create your TruthLens AI profile</h2>
+
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  <div class="flash">{{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form class="form-stack" method="post">
+                <div class="field">
+                    <label for="name">Full Name</label>
+                    <input class="input" type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="field">
+                    <label for="email">Email Address</label>
+                    <input class="input" type="email" id="email" name="email" placeholder="name@company.com" required>
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input class="input" type="password" id="password" name="password" placeholder="Create password" minlength="6" required>
+                </div>
+                <div class="field">
+                    <label for="password2">Confirm Password</label>
+                    <input class="input" type="password" id="password2" name="password2" placeholder="Confirm password" minlength="6" required>
+                </div>
+                <p class="small" style="margin-top: 8px; margin-bottom: 10px;">A 4-digit OTP will be sent to your email after this step. The code expires in 30 seconds.</p>
+                <button class="btn btn-primary" type="submit">Continue to OTP verification</button>
+            </form>
+
+            <p class="small" style="margin-top: 16px;">
+                Already have an account?
+                <a href="{{ url_for('login') }}" style="color: #d7e3ff;">Log in</a>
+            </p>
+        </section>
+    </main>
 </body>
 </html>

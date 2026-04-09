@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Plan | TruthLens AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylestotal.css') }}?v={{ range(1, 999999) | random }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</head>
+<body>
+    <div class="app-bg-grid"></div>
+    <div class="app-bg-noise"></div>
+    <div class="app-bg-glow"></div>
+
+    <header class="navbar page">
+        <div class="nav-shell">
+            <a class="brand" href="{{ url_for('home') }}"><span class="brand-dot"></span><span>TruthLens AI</span></a>
+            <nav class="nav-links">
+                <a class="{{ 'active' if request.endpoint == 'home' else '' }}" href="{{ url_for('home') }}">Home</a>
+                <a class="{{ 'active' if request.endpoint == 'validate' else '' }}" href="{{ url_for('validate') }}">Detect</a>
+                <a class="{{ 'active' if request.endpoint == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a class="{{ 'active' if request.endpoint == 'pricing_page' else '' }}" href="{{ url_for('pricing_page') }}">Pricing</a>
+                <a class="{{ 'active' if request.endpoint == 'model_page' else '' }}" href="{{ url_for('model_page') }}">Technology</a>
+                {% if current_user.is_authenticated %}
+                <a class="{{ 'active' if request.endpoint == 'profile' else '' }}" href="{{ url_for('profile') }}">Profile ({{ current_user.username[:10] }})</a>
+                <a href="{{ url_for('logout') }}" style="color: var(--danger);">Logout</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" style="color: var(--accent-2);">Login / Signup</a>
+                {% endif %}
+                <button id="theme-toggle" aria-label="Toggle Theme">🌙</button>
+            </nav>
+            <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-label="Toggle navigation">Menu</button>
+        </div>
+        <div class="mobile-menu" data-mobile-menu>
+            <a class="{{ 'active' if request.endpoint == 'home' else '' }}" href="{{ url_for('home') }}">Home</a>
+            <a class="{{ 'active' if request.endpoint == 'validate' else '' }}" href="{{ url_for('validate') }}">Detect</a>
+            <a class="{{ 'active' if request.endpoint == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a class="{{ 'active' if request.endpoint == 'pricing_page' else '' }}" href="{{ url_for('pricing_page') }}">Pricing</a>
+            <a class="{{ 'active' if request.endpoint == 'model_page' else '' }}" href="{{ url_for('model_page') }}">Technology</a>
+            {% if current_user.is_authenticated %}
+            <a class="{{ 'active' if request.endpoint == 'profile' else '' }}" href="{{ url_for('profile') }}">Profile ({{ current_user.username[:10] }})</a>
+            <a href="{{ url_for('logout') }}" style="color: var(--danger);">Logout</a>
+            {% else %}
+            <a href="{{ url_for('login') }}" style="color: var(--accent-2);">Login / Signup</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="page section">
+        <div class="center reveal" style="max-width: 600px; margin: 0 auto 40px;">
+            <span class="kicker">Choose Your Plan</span>
+            <h1 style="margin-top: 12px; font-size: clamp(2rem, 3vw, 3rem);">Unlock Premium Security</h1>
+            <p style="margin-top: 10px;">Select the tier that best fits your forensic analysis volume.</p>
+        </div>
+
+        <section class="grid-2 pricing-grid reveal">
+            <article class="card plan-card free-plan" data-plan-card="free">
+                <div class="split plan-card-head">
+                    <div class="label plan-level">Basic Analytics</div>
+                    <span class="pill">Starter</span>
+                </div>
+
+                <div class="plan-header">
+                    <h2 class="plan-title">Free Demo</h2>
+                    <p class="plan-subtitle">Test the forensic pipeline on a small scale.</p>
+                </div>
+
+                <div class="plan-price-row">
+                    <span class="plan-price">₹0</span>
+                    <span class="plan-period">/month</span>
+                </div>
+
+                <div class="plan-action">
+                    <button class="btn btn-ghost plan-button" type="button" onclick="selectPlan('free')">Choose Free Plan</button>
+                </div>
+
+                <div class="plan-divider"></div>
+
+                <ul class="list-clean plan-features">
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                        <span>Up to 3 total video uploads</span>
+                    </li>
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                        <span>Basic deepfake detection</span>
+                    </li>
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                        <span>Standard dashboard access</span>
+                    </li>
+                </ul>
+            </article>
+
+            <article class="card-pro plan-card pro-plan" data-plan-card="pro">
+                <div class="pro-top-strip" aria-hidden="true"></div>
+                <span class="pro-badge">Most Popular</span>
+
+                <div class="split plan-card-head">
+                    <div class="label plan-level">Professional Level</div>
+                    <span class="pill pro-pill">Best Value</span>
+                </div>
+
+                <div class="plan-header">
+                    <h2 class="plan-title">Pro Tier</h2>
+                    <p class="plan-subtitle">Uncapped forensic power designed for complete deepfake confidence.</p>
+                </div>
+
+                <div class="plan-price-row">
+                    <span class="price-val">₹999</span>
+                    <span class="price-period">/month</span>
+                </div>
+
+                <div class="plan-action">
+                    <button class="btn-pro plan-button" type="button" onclick="selectPlan('pro')">Upgrade to Pro</button>
+                </div>
+
+                <div class="plan-divider"></div>
+
+                <ul class="list-clean plan-features pro-features">
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                        <span>Everything in Free</span>
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                        <span>Unlimited uploads</span>
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                        <span>Full dashboard access</span>
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                        <span>Advanced detection insights</span>
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                        <span>Priority experience feel</span>
+                    </li>
+                </ul>
+            </article>
+        </section>
+
+        <footer class="footer">
+            <p class="small">TruthLens AI &copy; 2026</p>
+            <div class="row">
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('validate') }}">Detect</a>
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('pricing_page') }}">Pricing</a>
+                <a href="{{ url_for('model_page') }}">Technology</a>
+                <a href="{{ url_for('profile') }}">Profile</a>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        const isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+
+        function normalizePlan(planType) {
+            const value = (planType || '').toString().trim().toLowerCase();
+            return value === 'pro' ? 'pro' : 'free';
+        }
+
+        function persistPlanState(planType, status, uploadLimit) {
+            const selectedPlan = normalizePlan(planType);
+            localStorage.setItem('plan', selectedPlan);
+            localStorage.setItem('planStatus', status || 'active');
+            localStorage.setItem('planSelectedAt', new Date().toISOString());
+            localStorage.setItem('uploadLimit', selectedPlan === 'pro' ? 'unlimited' : String(uploadLimit || '3'));
+        }
+
+        function markActivePlan(planType) {
+            const selected = normalizePlan(planType);
+            document.querySelectorAll('[data-plan-card]').forEach((card) => {
+                card.classList.toggle('active-plan', card.getAttribute('data-plan-card') === selected);
+            });
+        }
+
+        async function hydratePlanFromServer() {
+            if (!isAuthenticated) {
+                const localPlan = normalizePlan(localStorage.getItem('plan') || 'free');
+                markActivePlan(localPlan);
+                return;
+            }
+
+            try {
+                const response = await fetch("{{ url_for('get_plan') }}", {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!response.ok) {
+                    throw new Error('Unable to fetch plan state.');
+                }
+
+                const data = await response.json();
+                persistPlanState(data.plan, data.status, data.upload_limit);
+                markActivePlan(data.plan);
+            } catch (error) {
+                const fallbackPlan = normalizePlan(localStorage.getItem('plan') || 'free');
+                markActivePlan(fallbackPlan);
+            }
+        }
+
+        async function selectPlan(planType) {
+            const selectedPlan = normalizePlan(planType);
+            const currentPlan = normalizePlan(localStorage.getItem('plan') || 'free');
+
+            if (!isAuthenticated) {
+                window.location.href = "{{ url_for('login') }}";
+                return;
+            }
+
+            if (currentPlan === 'pro' && selectedPlan === 'free') {
+                markActivePlan('pro');
+                alert('Your Pro plan is active. Downgrading to Free is not allowed.');
+                return;
+            }
+
+            try {
+                const response = await fetch("{{ url_for('update_plan') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ plan: selectedPlan })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    const message = data.error || 'Unable to update plan.';
+                    alert(message);
+                    await hydratePlanFromServer();
+                    return;
+                }
+
+                persistPlanState(data.plan, data.status, data.upload_limit);
+                markActivePlan(data.plan);
+            } catch (error) {
+                alert('Unable to update plan at the moment. Please try again.');
+                return;
+            }
+
+            markActivePlan(selectedPlan);
+            window.location.href = "{{ url_for('dashboard') }}";
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            hydratePlanFromServer();
+        });
+    </script>
+</body>
+</html>

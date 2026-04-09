@@ -1,51 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Deepfake Detector - Hackathon Project</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/styles.css') }}"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="main-container">
-      <header>
-        <h1><i class="fas fa-shield-alt"></i> Deepfake Detector</h1>
-        <p>Upload a video or audio file to check for deepfakes.</p>
-      </header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Engine | TruthLens AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylestotal.css') }}">
+    <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</head>
+<body>
+    <div class="app-bg-grid"></div>
+    <div class="app-bg-noise"></div>
+    <div class="app-bg-glow"></div>
 
-      <div class="upload-section">
-        <form method="POST" action="/" enctype="multipart/form-data">
-          <input type="file" name="video_file" required />
-          <input type="number" name="sequence_length" value="60" required />
-          <button type="submit">Upload Video</button>
-        </form>
-      </div>
+    <header class="navbar page">
+        <div class="nav-shell">
+            <a class="brand" href="{{ url_for('home') }}"><span class="brand-dot"></span><span>TruthLens AI</span></a>
+            <nav class="nav-links">
+                <a class="{{ 'active' if request.endpoint == 'home' else '' }}" href="{{ url_for('home') }}">Home</a>
+                <a class="{{ 'active' if request.endpoint == 'validate' else '' }}" href="{{ url_for('validate') }}">Detect</a>
+                <a class="{{ 'active' if request.endpoint == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a class="{{ 'active' if request.endpoint == 'pricing_page' else '' }}" href="{{ url_for('pricing_page') }}">Pricing</a>
+                <a class="{{ 'active' if request.endpoint == 'model_page' else '' }}" href="{{ url_for('model_page') }}">Technology</a>
+                {% if current_user.is_authenticated %}
+                <a class="{{ 'active' if request.endpoint == 'profile' else '' }}" href="{{ url_for('profile') }}">Profile ({{ current_user.username[:10] }})</a>
+                <a href="{{ url_for('logout') }}" style="color: var(--danger);">Logout</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" style="color: var(--accent-2);">Login / Signup</a>
+                {% endif %}
+                <button id="theme-toggle" aria-label="Toggle Theme">🌙</button>
+            </nav>
+            <button class="nav-toggle" data-nav-toggle aria-expanded="false" aria-label="Toggle navigation">Menu</button>
+        </div>
+        <div class="mobile-menu" data-mobile-menu>
+            <a class="{{ 'active' if request.endpoint == 'home' else '' }}" href="{{ url_for('home') }}">Home</a>
+            <a class="{{ 'active' if request.endpoint == 'validate' else '' }}" href="{{ url_for('validate') }}">Detect</a>
+            <a class="{{ 'active' if request.endpoint == 'dashboard' else '' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a class="{{ 'active' if request.endpoint == 'pricing_page' else '' }}" href="{{ url_for('pricing_page') }}">Pricing</a>
+            <a class="{{ 'active' if request.endpoint == 'model_page' else '' }}" href="{{ url_for('model_page') }}">Technology</a>
+            {% if current_user.is_authenticated %}
+            <a class="{{ 'active' if request.endpoint == 'profile' else '' }}" href="{{ url_for('profile') }}">Profile ({{ current_user.username[:10] }})</a>
+            <a href="{{ url_for('logout') }}" style="color: var(--danger);">Logout</a>
+            {% else %}
+            <a href="{{ url_for('login') }}" style="color: var(--accent-2);">Login / Signup</a>
+            {% endif %}
+        </div>
+    </header>
 
-      <div id="result" class="result"></div>
+    <main class="page section">
+        <section class="hero reveal">
+            <article class="hero-card">
+                <span class="kicker">How It Works</span>
+                <h1 style="margin-top: 8px;">The forensic AI engine behind authenticity verification</h1>
+                <p>
+                    Our detection model combines frame-level analysis with temporal consistency evaluation to identify synthetic manipulation patterns that human reviewers often miss.
+                </p>
+            </article>
+            <aside class="hero-card">
+                <div class="split">
+                    <div>
+                        <p class="label">Architecture Overview</p>
+                        <h3>Multi-stage pipeline</h3>
+                    </div>
+                    <span class="pill">Production Ready</span>
+                </div>
+                <div class="timeline" style="margin-top: 16px;">
+                    <div class="timeline-step active">Video ingestion & frame extraction</div>
+                    <div class="timeline-step active">Face detection and region tracking</div>
+                    <div class="timeline-step active">Artifact and inconsistency analysis</div>
+                    <div class="timeline-step">Confidence scoring & risk classification</div>
+                </div>
+            </aside>
+        </section>
 
-      <div class="video-container">
-        <video id="uploadedVideo" controls>
-          <source src="" type="video/mp4" />
-        </video>
-      </div>
-    </div>
+        <section class="section reveal">
+            <span class="kicker">Pipeline Stages</span>
+            <h2 style="margin-top: 8px;">Understanding the analysis process</h2>
+            <div class="grid-2" style="margin-top: 18px;">
+                <article class="card">
+                    <span class="kicker">Stage 1</span>
+                    <h3 style="margin-top: 8px;">Frame Extraction</h3>
+                    <p>Video is decoded and a uniform frame sequence is extracted. This ensures consistent temporal sampling regardless of video codec or frame rate.</p>
+                </article>
+                <article class="card">
+                    <span class="kicker">Stage 2</span>
+                    <h3 style="margin-top: 8px;">Face Detection & Tracking</h3>
+                    <p>Deep neural networks locate and track facial regions across frames, building a continuous identity chain. Misalignments signal potential synthesis.</p>
+                </article>
+                <article class="card">
+                    <span class="kicker">Stage 3</span>
+                    <h3 style="margin-top: 8px;">Artifact Inspection</h3>
+                    <p>The system examines texture blends, boundary artifacts, and local reconstruction inconsistencies in facial geometry. Deepfakes often show subtle blending errors.</p>
+                </article>
+                <article class="card">
+                    <span class="kicker">Stage 4</span>
+                    <h3 style="margin-top: 8px;">Authenticity Scoring</h3>
+                    <p>Signals from all stages are aggregated into a single confidence score that reflects model certainty about whether the video is authentic or manipulated.</p>
+                </article>
+            </div>
+        </section>
 
-    <footer>
-      <p>Made with ❤️ by [Your Team Name] for National Hackathon 2024</p>
-    </footer>
+        <section class="section reveal">
+            <span class="kicker">Key Capabilities</span>
+            <h2 style="margin-top: 8px;">Technical strengths</h2>
+            <div class="grid-3" style="margin-top: 18px;">
+                <article class="card card-quiet">
+                    <h3>Temporal Analysis</h3>
+                    <p>Examines behavior continuity across frame sequences. Synthetic media often exhibits abrupt behavioral shifts or unnatural transitions.</p>
+                </article>
+                <article class="card card-quiet">
+                    <h3>Identity Consistency</h3>
+                    <p>Verifies facial features remain stable and geometrically coherent across the video. Generation artifacts often break subtle biometric continuity.</p>
+                </article>
+                <article class="card card-quiet">
+                    <h3>Texture Fidelity</h3>
+                    <p>Analyzes skin texture, natural lighting gradients, and micro-expressions. Synthetic faces typically show reduced texture complexity.</p>
+                </article>
+            </div>
+        </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-  </body>
+        <section class="section reveal">
+            <article class="hero-card center">
+                <span class="kicker">Detection Confidence</span>
+                <h2 style="margin-top: 8px;">Understanding result scores</h2>
+                <p style="max-width: 620px; margin: 10px auto 0;">
+                    Our confidence score reflects model certainty in its verdict. A high confidence authentic score indicates minimal forensic anomalies. A high confidence deepfake score indicates strong presence of synthesis patterns. No score guarantees absolute truth—it supports informed human decision-making.
+                </p>
+            </article>
+        </section>
+
+        <section class="section reveal">
+            <span class="kicker">Forensic Signals</span>
+            <h2 style="margin-top: 8px;">What the model evaluates</h2>
+            <div class="grid-2" style="margin-top: 18px;">
+                <article class="card">
+                    <h3>Facial Geometry</h3>
+                    <ul class="list-clean">
+                        <li>Landmark stability across frames</li>
+                        <li>Biometric feature ratios</li>
+                        <li>Occlusion handling consistency</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h3>Temporal Behavior</h3>
+                    <ul class="list-clean">
+                        <li>Expression transition smoothness</li>
+                        <li>Eye movement patterns</li>
+                        <li>Lip-sync correlation</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h3>Texture Analysis</h3>
+                    <ul class="list-clean">
+                        <li>Skin surface regularity</li>
+                        <li>Lighting consistency</li>
+                        <li>Compression artifact distribution</li>
+                    </ul>
+                </article>
+                <article class="card">
+                    <h3>Edge Coherence</h3>
+                    <ul class="list-clean">
+                        <li>Facial boundary sharpness</li>
+                        <li>Hair-skin transitions</li>
+                        <li>Blending anomalies</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <section class="section reveal">
+            <article class="hero-card center">
+                <span class="kicker">Start Validating</span>
+                <h2 style="margin-top: 8px;">Test the detection engine</h2>
+                <p>Upload a video to experience the analysis pipeline firsthand and receive a detailed forensic report.</p>
+                <div class="hero-actions" style="justify-content: center;">
+                    <a class="btn btn-primary" href="{{ url_for('validate') }}">Run Validation Scan</a>
+                    <a class="btn btn-ghost" href="{{ url_for('home') }}">Back To Overview</a>
+                </div>
+            </article>
+        </section>
+
+        <footer class="footer">
+            <p class="small">TruthLens AI &copy; 2026</p>
+            <div class="row">
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('validate') }}">Detect</a>
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('pricing_page') }}">Pricing</a>
+                <a href="{{ url_for('model_page') }}">Technology</a>
+                <a href="{{ url_for('profile') }}">Profile</a>
+            </div>
+        </footer>
+    </main>
+</body>
 </html>

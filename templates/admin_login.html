@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | TruthLens AI</title>
+    <title>Admin Login | TruthLens AI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/stylestotal.css') }}">
     <script defer src="{{ url_for('static', filename='js/script.js') }}"></script>
-<script>
+    <script>
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
     </script>
@@ -14,43 +14,39 @@
 <body>
     <div class="app-bg-grid"></div>
     <div class="app-bg-noise"></div>
-    <div class="app-bg-glow"></div>
+    <div class="app-bg-glow" style="background: radial-gradient(circle at 50% 50%, rgba(255, 92, 138, 0.15), transparent 40%);"></div>
 
     <main class="page auth-wrap">
         <section class="auth-brand reveal">
-            <span class="kicker">Welcome Back</span>
-            <h1 style="margin-top: 10px;">Continue secure video authenticity reviews.</h1>
+            <span class="kicker" style="color: var(--danger);">Administrator Access</span>
+            <h1 style="margin-top: 10px;">TruthLens AI</h1>
             <p>
-                Access your dashboard, run fresh validations, and monitor your recent scan outcomes from one workspace.
+                Access the internal admin dashboard to manage users, monitor analytics, and review global detections.
             </p>
             <div class="grid-2" style="margin-top: 18px;">
                 <article class="card card-quiet">
-                    <h3>Operational clarity</h3>
-                    <p>Results are structured for practical decisions with risk and confidence context.</p>
-                </article>
-                <article class="card card-quiet">
-                    <h3>Fast workflow</h3>
-                    <p>Upload, process, and review verdicts in a focused and consistent interface.</p>
+                    <h3>Secure Login</h3>
+                    <p>Administrative actions are strictly logged. Ensure you are logging in from a secure terminal.</p>
                 </article>
             </div>
         </section>
 
-        <section class="auth-card reveal">
-            <span class="kicker">Account Access</span>
-            <h2 style="margin: 8px 0 16px;">Login to TruthLens AI</h2>
+        <section class="auth-card reveal" style="border-top: 4px solid var(--danger);">
+            <span class="kicker">Admin Portal</span>
+            <h2 style="margin: 8px 0 16px;">Sign In</h2>
 
             {% with messages = get_flashed_messages() %}
               {% if messages %}
                 {% for message in messages %}
-                  <div class="flash">{{ message }}</div>
+                  <div class="flash" style="border-color: var(--danger); background: rgba(255,92,138,0.1); color: var(--danger);">{{ message }}</div>
                 {% endfor %}
               {% endif %}
             {% endwith %}
 
             <form method="post" class="form-stack">
                 <div class="field">
-                    <label for="email">Email Address</label>
-                    <input class="input" type="email" id="email" name="email" placeholder="name@example.com" required>
+                    <label for="username">Username</label>
+                    <input class="input" type="text" id="username" name="username" placeholder="Enter admin username" required>
                 </div>
                 <div class="field">
                     <label for="password">Password</label>
@@ -59,18 +55,12 @@
                         <button type="button" class="password-toggle" data-password-toggle="password">Show</button>
                     </div>
                 </div>
-                <div class="split">
-                    <a class="small" href="{{ url_for('contact_page') }}">Forgot password?</a>
-                </div>
-                <button class="btn btn-primary" type="submit">Sign In</button>
+                <button class="btn btn-primary" type="submit" style="background: var(--danger); box-shadow: 0 4px 14px rgba(255,92,138,0.3);">Authenticate</button>
             </form>
 
             <p class="small" style="margin-top: 16px;">
-                Need an account?
-                <a href="{{ url_for('signup') }}" style="color: #d7e3ff;">Create one</a>
-            </p>
-            <p class="small" style="margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
-                <a href="{{ url_for('admin_login') }}" style="color: var(--danger);">Admin Login</a>
+                Not an admin? 
+                <a href="{{ url_for('login') }}" style="color: #d7e3ff;">Return to user login</a>
             </p>
         </section>
     </main>
